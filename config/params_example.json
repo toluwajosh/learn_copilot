@@ -1,0 +1,6 @@
+{
+  "doc_path": "path/to/doc.pdf",
+  "collection_name": "doc_name",
+  "persist": true,
+  "doc_type": "pdf"
+}
