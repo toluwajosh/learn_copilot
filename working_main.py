@@ -86,7 +86,7 @@ tools = [
     Tool(
         name="English language syllabus",
         func=doc_agent.run,
-        description="Useful for when asking about the English language syllabus, or just simply syllabus",
+        description="Useful for when asking about the English language syllabus, or just simply the syllabus",
         # return_direct=True, # I dont understand this
     ),
     # Tool(
@@ -113,11 +113,18 @@ agent = initialize_agent(
     verbose=True,
     # agent_kwargs=agent_kwargs,
     memory=memory,
+    handle_parsing_errors=True,
 )
 
 while True:
     input_text = input(">>> ")
+
+    if input_text.upper() == "Q":
+        print("Quitting...")
+        break
+
     try:
-        agent.run(input=input_text)
+        output = agent.run(input=input_text)
+        # print("Chain output: ", output)
     except (ValueError, openai.error.InvalidRequestError) as e:
         print(e)
