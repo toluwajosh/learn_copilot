@@ -28,6 +28,7 @@ COLLECTION_NAME = PARAMS["collection_name"]
 COLLECTION_DESCRIPTION = PARAMS["collection_description"]
 PERSIST = PARAMS["persist"]
 PERSIST_PATH = PARAMS["persist_path"]
+RERUN_INDEXING = PARAMS["rerun_indexing"]
 
 
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0613")
@@ -49,11 +50,19 @@ memory = ConversationBufferMemory(
 
 # document with persistent index
 if PERSIST and os.path.exists(PERSIST_PATH):
-    print("Reusing index...\n")
-    vectorstore = Chroma(
-        persist_directory=PERSIST_PATH, embedding_function=OpenAIEmbeddings()
-    )
-    index = VectorStoreIndexWrapper(vectorstore=vectorstore)
+    if RERUN_INDEXING:
+        print("Rerunning index...\n")
+        loader = TextLoader(COLLECTION_PATH)
+        index = VectorstoreIndexCreator(
+            vectorstore_kwargs={"persist_directory": PERSIST_PATH}
+        ).from_loaders([loader])
+    else:
+        print("Reusing index...\n")
+        vectorstore = Chroma(
+            persist_directory=PERSIST_PATH,
+            embedding_function=OpenAIEmbeddings(),
+        )
+        index = VectorStoreIndexWrapper(vectorstore=vectorstore)
 else:
     loader = TextLoader(COLLECTION_PATH)
     if PERSIST:
