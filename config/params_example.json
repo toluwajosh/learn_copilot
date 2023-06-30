@@ -1,6 +1,11 @@
 {
-  "doc_path": "path/to/doc.pdf",
+  "role": "collection",
+  "role_description": "A collection of documents",
+  "collection_path": "path/to/doc.txt",
   "collection_name": "doc_name",
+  "collection_description": "doc_description",
   "persist": true,
-  "doc_type": "pdf"
+  "persist_path": "path/to/persist/dir",
+  "library_paths": [],
+  "added_paths": []
 }

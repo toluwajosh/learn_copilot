@@ -164,3 +164,4 @@ persist/
 .chroma/
 params.json
 data/
+__archive__/

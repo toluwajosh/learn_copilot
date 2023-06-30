@@ -3,7 +3,6 @@ Chat with a document
 """
 
 
-import json
 import os
 
 import openai
@@ -11,36 +10,24 @@ from dotenv import load_dotenv
 from langchain.agents import AgentType, Tool, initialize_agent
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import (
-    PyPDFLoader,
-    TextLoader,
-    DirectoryLoader,
-    JSONLoader,
-)
+from langchain.document_loaders import TextLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.memory import ConversationBufferMemory
 from langchain.vectorstores import Chroma
 
+from settings import PARAMS
+
 load_dotenv()
-
-with open("config/params.json") as f:
-    session_params = json.load(f)
-
-doc_loaders = {
-    "pdf": PyPDFLoader,
-    "txt": TextLoader,
-    "dir": DirectoryLoader,
-    "json": JSONLoader,
-}
 
 
 # run params
-DOC_PATH = session_params["doc_path"]
-COLLECTION_NAME = session_params["collection_name"]
-PERSIST = session_params["persist"]
-LOADER = doc_loaders[session_params["loader"]]
+COLLECTION_PATH = PARAMS["collection_path"]
+COLLECTION_NAME = PARAMS["collection_name"]
+COLLECTION_DESCRIPTION = PARAMS["collection_description"]
+PERSIST = PARAMS["persist"]
+PERSIST_PATH = PARAMS["persist_path"]
 
 
 llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0613")
@@ -61,17 +48,17 @@ memory = ConversationBufferMemory(
 # db_chain = SQLDatabaseChain.from_llm(llm, db, verbose=True)
 
 # document with persistent index
-if PERSIST and os.path.exists("persist"):
+if PERSIST and os.path.exists(PERSIST_PATH):
     print("Reusing index...\n")
     vectorstore = Chroma(
-        persist_directory="persist", embedding_function=OpenAIEmbeddings()
+        persist_directory=PERSIST_PATH, embedding_function=OpenAIEmbeddings()
     )
     index = VectorStoreIndexWrapper(vectorstore=vectorstore)
 else:
-    loader = LOADER(DOC_PATH)
+    loader = TextLoader(COLLECTION_PATH)
     if PERSIST:
         index = VectorstoreIndexCreator(
-            vectorstore_kwargs={"persist_directory": "persist"}
+            vectorstore_kwargs={"persist_directory": PERSIST_PATH}
         ).from_loaders([loader])
     else:
         index = VectorstoreIndexCreator().from_loaders([loader])
@@ -84,9 +71,9 @@ doc_agent = RetrievalQA.from_chain_type(
 
 tools = [
     Tool(
-        name="English language syllabus",
+        name=COLLECTION_NAME,
         func=doc_agent.run,
-        description="Useful for when asking about the English language syllabus, or just simply the syllabus",
+        description=COLLECTION_DESCRIPTION,
         # return_direct=True, # I dont understand this
     ),
     # Tool(
