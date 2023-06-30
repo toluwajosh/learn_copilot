@@ -81,17 +81,17 @@ doc_agent = RetrievalQA.from_chain_type(
 )
 
 tools = [
-    # Tool(
-    #     name="Calculator",
-    #     func=llm_math_chain.run,
-    #     description="useful for when you need to answer questions about math",
-    # ),
     Tool(
         name="English language syllabus",
         func=doc_agent.run,
         description="Useful for when asking about the English language syllabus, or just simply syllabus",
         # return_direct=True, # I dont understand this
     ),
+    # Tool(
+    #     name="Calculator",
+    #     func=llm_math_chain.run,
+    #     description="useful for when you need to answer questions about math",
+    # ),
     # Tool(
     #     name="Search",
     #     func=search.run,

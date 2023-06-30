@@ -31,7 +31,10 @@ PERSIST_PATH = PARAMS["persist_path"]
 RERUN_INDEXING = PARAMS["rerun_indexing"]
 
 
-llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-0613")
+llm = ChatOpenAI(
+    temperature=0.5,
+    #  model="gpt-3.5-turbo-0613"
+)
 memory = ConversationBufferMemory(
     memory_key="chat_history", return_messages=True
 )
@@ -77,6 +80,7 @@ doc_agent = RetrievalQA.from_chain_type(
     chain_type="stuff",
     retriever=index.vectorstore.as_retriever(),
 )
+
 
 tools = [
     Tool(
