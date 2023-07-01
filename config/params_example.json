@@ -1,11 +1,15 @@
 {
-  "role": "collection",
-  "role_description": "A collection of documents",
-  "collection_path": "path/to/doc.txt",
-  "collection_name": "doc_name",
-  "collection_description": "doc_description",
+  "subjects": {
+    "Subject 1": {
+      "collection_name": "Subject 1",
+      "collection_description": "Description.",
+      "collection_path": "path/to/collection.txt",
+      "persist_path": "path/to/persist"
+    }
+  },
+  "model": "gpt-3.5-turbo",
   "persist": true,
-  "persist_path": "path/to/persist/dir",
+  "rerun_indexing": false,
   "library_paths": [],
   "added_paths": []
 }

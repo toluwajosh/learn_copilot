@@ -165,3 +165,4 @@ persist/
 params.json
 data/
 __archive__/
+*__local*

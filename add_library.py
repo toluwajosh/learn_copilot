@@ -1,6 +1,7 @@
 """
 Script for adding text to the collection
 """
+import argparse
 from pathlib import Path
 from langchain.document_loaders import (
     PyPDFLoader,
@@ -8,11 +9,38 @@ from langchain.document_loaders import (
     Docx2txtLoader,
 )
 
-from settings import PARAMS
+from agents.settings import PARAMS
 
 
-COLLECTION_PATH = PARAMS["collection_path"]
-LIBRARY_PATHS = PARAMS["library_paths"]
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Add text to a collection.")
+    parser.add_argument(
+        "--collection-path",
+        "-p",
+        type=str,
+        required=True,
+        help="Path to the collection to add.",
+    )
+
+    parser.add_argument(
+        "--library-paths",
+        "-l",
+        nargs="+",
+        default=[],
+        help="List of libraries to add",
+    )
+
+    return parser.parse_args()
+
+
+cli_args = parse_arguments()
+
+COLLECTION_PATH = cli_args.collection_path
+LIBRARY_PATHS = (
+    PARAMS["library_paths"]
+    if not cli_args.library_paths
+    else cli_args.library_paths
+)
 
 doc_loaders = {
     "pdf": PyPDFLoader,
@@ -32,3 +60,4 @@ for path in LIBRARY_PATHS:
         for page in pages:
             f.write(page.page_content)
         PARAMS["added_paths"].append(path)
+
