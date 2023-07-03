@@ -62,7 +62,7 @@ if prompt := st.chat_input():
         st_callback = StreamlitCallbackHandler(st.container())
         # response = agent.run(input=prompt, callbacks=[st_callback])
         response = st.session_state["agents"][subject].run(
-            input=prompt + f" , in the {subject}", callbacks=[st_callback]
+            prompt + f" , in the {subject}", callbacks=[st_callback]
         )
         st.session_state.messages[subject].append(
             {"role": "assistant", "content": response}

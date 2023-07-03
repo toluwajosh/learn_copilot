@@ -63,7 +63,8 @@ def get_agent(
             search_kwargs={
                 # "reduce_k_below_max_tokens": True,
                 # "max_tokens_limit": 4097,
-            }
+            },
+            return_source_documents=True,
         ),
         # max_tokens_limit=4097
         # reduce_k_below_max_tokens=True,
@@ -96,7 +97,8 @@ def get_agent(
     return initialize_agent(
         tools,
         llm,
-        agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        # agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
         # agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
         verbose=True,
         memory=memory,
