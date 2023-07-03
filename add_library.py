@@ -1,12 +1,14 @@
 """
 Script for adding text to the collection
 """
+import os
 import argparse
 from pathlib import Path
 from langchain.document_loaders import (
     PyPDFLoader,
     TextLoader,
     Docx2txtLoader,
+    DirectoryLoader,
 )
 
 from agents.settings import PARAMS
@@ -37,7 +39,7 @@ cli_args = parse_arguments()
 
 COLLECTION_PATH = cli_args.collection_path
 LIBRARY_PATHS = (
-    PARAMS["library_paths"]
+    PARAMS.library_paths
     if not cli_args.library_paths
     else cli_args.library_paths
 )
@@ -50,14 +52,18 @@ doc_loaders = {
 
 
 for path in LIBRARY_PATHS:
-    if path in PARAMS["added_paths"]:
+    if path in PARAMS.added_paths:
         print(f"{path} already in library. Skipping...")
         continue
-    loader = doc_loaders[Path(path).suffix.split(".")[-1]](path)
+    if os.path.isdir(path):
+        loader = DirectoryLoader(path)
+    else:
+        loader = doc_loaders[Path(path).suffix.split(".")[-1]](path)
     pages = loader.load_and_split()
     with open(COLLECTION_PATH, "a") as f:
         print(f"writing pages.... {path}")
         for page in pages:
             f.write(page.page_content)
-        PARAMS["added_paths"].append(path)
+        PARAMS.added_paths.append(path)
 
+PARAMS.update()
