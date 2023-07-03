@@ -13,8 +13,8 @@ with st.sidebar:
         LIBRARY,
     )
 
-    subject_request = st.text_input("Request a subject")
-    st.button("Request")  # if button, do something
+    # subject_request = st.text_input("Request a subject")
+    # st.button("Request")  # if button, do something
 
 
 subject_params = PARAMS.subjects[subject]

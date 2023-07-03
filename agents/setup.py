@@ -26,7 +26,7 @@ def get_agent(
     enable_search: bool = False,
 ):
     llm = ChatOpenAI(
-        temperature=0.0,
+        temperature=0.5,
         model=PARAMS.model,
         # model="gpt-3.5-turbo-16k",
     )
@@ -97,8 +97,8 @@ def get_agent(
     return initialize_agent(
         tools,
         llm,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        # agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+        # agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
         # agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
         verbose=True,
         memory=memory,
