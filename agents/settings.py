@@ -10,6 +10,7 @@ class AppParams:
     rerun_indexing: bool
     library_paths: list
     added_paths: list
+    enable_search: bool = False
     model: str = "gpt-3.5-turbo"
     config_path: str = "config/params.json"
 

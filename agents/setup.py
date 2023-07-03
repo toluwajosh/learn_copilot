@@ -4,12 +4,13 @@ from dotenv import load_dotenv
 from langchain.agents import AgentType, Tool, initialize_agent
 from langchain.chains import RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import TextLoader
+from langchain.document_loaders import TextLoader, DirectoryLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.memory import ConversationBufferMemory
 from langchain.vectorstores import Chroma
+from langchain.tools import DuckDuckGoSearchRun
 
 from agents.settings import PARAMS
 
@@ -23,17 +24,22 @@ def get_agent(
     persist_path: str,
     rerun_indexing: bool,
     persist: bool,
+    enable_search: bool = False,
 ):
     llm = ChatOpenAI(temperature=0.5, model=PARAMS.model)
     memory = ConversationBufferMemory(
         memory_key="chat_history", return_messages=True
     )
 
+    if os.path.isdir(collection_path):
+        loader = DirectoryLoader(collection_path)
+    else:
+        loader = TextLoader(collection_path)
+
     # tool
     if persist and os.path.exists(persist_path):
         if rerun_indexing:
             print("Rerunning index...\n")
-            loader = TextLoader(collection_path)
             index = VectorstoreIndexCreator(
                 vectorstore_kwargs={"persist_directory": persist_path}
             ).from_loaders([loader])
@@ -45,7 +51,6 @@ def get_agent(
             )
             index = VectorStoreIndexWrapper(vectorstore=vectorstore)
     else:
-        loader = TextLoader(collection_path)
         if persist:
             index = VectorstoreIndexCreator(
                 vectorstore_kwargs={"persist_directory": persist_path}
@@ -66,6 +71,15 @@ def get_agent(
             description=collection_description,
         ),
     ]
+
+    if enable_search:
+        tools.append(
+            Tool(
+                name="search",
+                func=DuckDuckGoSearchRun().run,
+                description="Search the web for an answers not in the other contexts.",
+            )
+        )
 
     return initialize_agent(
         tools,
