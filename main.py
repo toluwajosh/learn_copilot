@@ -44,6 +44,11 @@ if "messages" not in st.session_state:
         ]
         for subject in LIBRARY
     }
+if (
+    not st.session_state.get("agents", False)
+    or subject not in st.session_state["agents"]
+):
+    st.session_state["agents"] = {subject: agent}
 
 for msg in st.session_state.messages[subject]:
     st.chat_message(msg["role"]).write(msg["content"])
@@ -55,7 +60,10 @@ if prompt := st.chat_input():
     st.chat_message("user").write(prompt)
     with st.chat_message("assistant"):
         st_callback = StreamlitCallbackHandler(st.container())
-        response = agent.run(input=prompt, callbacks=[st_callback])
+        # response = agent.run(input=prompt, callbacks=[st_callback])
+        response = st.session_state["agents"][subject].run(
+            input=prompt + f" , in the {subject}", callbacks=[st_callback]
+        )
         st.session_state.messages[subject].append(
             {"role": "assistant", "content": response}
         )

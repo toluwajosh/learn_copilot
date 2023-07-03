@@ -24,29 +24,23 @@ def get_agent(
     rerun_indexing: bool,
     persist: bool,
 ):
-    llm = ChatOpenAI(temperature=0.5, model=PARAMS.model)
+    llm = ChatOpenAI(temperature=0.0, model=PARAMS.model)
     memory = ConversationBufferMemory(
         memory_key="chat_history", return_messages=True
     )
 
     # tool
     if persist and os.path.exists(persist_path):
-        if rerun_indexing:
-            print("Rerunning index...\n")
-            loader = TextLoader(collection_path)
-            index = VectorstoreIndexCreator(
-                vectorstore_kwargs={"persist_directory": persist_path}
-            ).from_loaders([loader])
-        else:
-            print("Reusing index...\n")
-            vectorstore = Chroma(
-                persist_directory=persist_path,
-                embedding_function=OpenAIEmbeddings(),
-            )
-            index = VectorStoreIndexWrapper(vectorstore=vectorstore)
+        print("Reusing index...\n")
+        vectorstore = Chroma(
+            persist_directory=persist_path,
+            embedding_function=OpenAIEmbeddings(),
+        )
+        index = VectorStoreIndexWrapper(vectorstore=vectorstore)
     else:
         loader = TextLoader(collection_path)
         if persist:
+            print("Creating index...\n")
             index = VectorstoreIndexCreator(
                 vectorstore_kwargs={"persist_directory": persist_path}
             ).from_loaders([loader])
@@ -71,6 +65,7 @@ def get_agent(
         tools,
         llm,
         agent=AgentType.CHAT_CONVERSATIONAL_REACT_DESCRIPTION,
+        # agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
         verbose=True,
         memory=memory,
         handle_parsing_errors=True,
