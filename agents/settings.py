@@ -1,6 +1,6 @@
 import json
-from typing import Optional
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+from typing import Dict, Optional
 
 
 @dataclass
@@ -10,8 +10,8 @@ class AppParams:
     rerun_indexing: bool
     library_paths: list
     added_paths: list
+    model: Dict
     enable_search: bool = False
-    model: str = "gpt-3.5-turbo"
     config_path: str = "config/params.json"
 
     @classmethod

@@ -2,17 +2,19 @@ import os
 
 from dotenv import load_dotenv
 from langchain.agents import AgentType, Tool, initialize_agent
-from langchain.chains import RetrievalQA, ConversationalRetrievalChain
+from langchain.chains import ConversationalRetrievalChain, RetrievalQA
 from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import TextLoader, DirectoryLoader
+from langchain.document_loaders import DirectoryLoader, TextLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.indexes import VectorstoreIndexCreator
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.memory import ConversationBufferMemory
-from langchain.vectorstores import Chroma
 from langchain.tools import DuckDuckGoSearchRun
+from langchain.vectorstores import Chroma
 
 from agents.settings import PARAMS
+
+from .models import get_model
 
 load_dotenv()
 
@@ -25,11 +27,7 @@ def get_agent(
     persist: bool,
     enable_search: bool = False,
 ):
-    llm = ChatOpenAI(
-        temperature=0.5,
-        model=PARAMS.model,
-        # model="gpt-3.5-turbo-16k",
-    )
+    llm = get_model(PARAMS.model["name"], PARAMS.model["params"])
     memory = ConversationBufferMemory(
         memory_key="chat_history", return_messages=True
     )
