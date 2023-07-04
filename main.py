@@ -15,7 +15,6 @@ with st.sidebar:
         LIBRARY,
     )
 
-    print(st.session_state.enable_search)
 
     enable_search = st.checkbox(
         "Enable Search",
@@ -24,7 +23,6 @@ with st.sidebar:
         key=subject,
     )
 
-    print("after: ", st.session_state.enable_search)
     if enable_search:
         st.session_state.enable_search[subject] = True
 
