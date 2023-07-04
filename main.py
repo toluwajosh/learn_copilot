@@ -6,12 +6,27 @@ from agents.settings import PARAMS
 
 LIBRARY = tuple(PARAMS.subjects.keys())
 
+if "enable_search" not in st.session_state:
+    st.session_state["enable_search"] = {}
 
 with st.sidebar:
     subject = st.selectbox(
         "Choose a subject",
         LIBRARY,
     )
+
+    print(st.session_state.enable_search)
+
+    enable_search = st.checkbox(
+        "Enable Search",
+        value=st.session_state.enable_search.get(subject, False),
+        disabled=st.session_state.enable_search.get(subject, None) is False,
+        key=subject,
+    )
+
+    print("after: ", st.session_state.enable_search)
+    if enable_search:
+        st.session_state.enable_search[subject] = True
 
     # subject_request = st.text_input("Request a subject")
     # st.button("Request")  # if button, do something
@@ -25,7 +40,7 @@ agent = get_agent(
     subject_params["collection_path"],
     subject_params["persist_path"],
     PARAMS.persist,
-    enable_search=PARAMS.enable_search,
+    enable_search=enable_search,
 )
 
 st.title("🤖 Learn CoPilot")
@@ -54,6 +69,9 @@ for msg in st.session_state.messages[subject]:
     st.chat_message(msg["role"]).write(msg["content"])
 
 if prompt := st.chat_input():
+    if not st.session_state.enable_search.get(subject, False):
+        st.session_state.enable_search[subject] = False
+
     st.session_state.messages[subject].append(
         {"role": "user", "content": prompt}
     )
