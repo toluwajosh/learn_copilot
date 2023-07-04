@@ -20,7 +20,7 @@ with st.sidebar:
     enable_search = st.checkbox(
         "Enable Search",
         value=st.session_state.enable_search.get(subject, False),
-        disabled=st.session_state.enable_search.get(subject, None) is False,
+        disabled=st.session_state.enable_search.get(subject, None) is not None,
         key=subject,
     )
 
