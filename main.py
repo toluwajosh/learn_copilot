@@ -15,7 +15,6 @@ with st.sidebar:
         LIBRARY,
     )
 
-
     enable_search = st.checkbox(
         "Enable Search",
         value=st.session_state.enable_search.get(subject, False),
@@ -23,23 +22,35 @@ with st.sidebar:
         key=subject,
     )
 
+    subject_params = PARAMS.subjects[subject]
+
+    agent = get_agent(
+        subject,
+        subject_params["collection_description"],
+        subject_params["collection_path"],
+        subject_params["persist_path"],
+        PARAMS.persist,
+        enable_search=enable_search,
+    )
+
     if enable_search:
         st.session_state.enable_search[subject] = True
+
+        agent = get_agent(
+            subject,
+            subject_params["collection_description"],
+            subject_params["collection_path"],
+            subject_params["persist_path"],
+            PARAMS.persist,
+            enable_search=enable_search,
+        )
 
     # subject_request = st.text_input("Request a subject")
     # st.button("Request")  # if button, do something
 
 
-subject_params = PARAMS.subjects[subject]
+print("Search: ", st.session_state.enable_search)
 
-agent = get_agent(
-    subject,
-    subject_params["collection_description"],
-    subject_params["collection_path"],
-    subject_params["persist_path"],
-    PARAMS.persist,
-    enable_search=enable_search,
-)
 
 st.title("🤖 Learn CoPilot")
 st.write(
@@ -78,7 +89,7 @@ if prompt := st.chat_input():
         st_callback = StreamlitCallbackHandler(st.container())
         # response = agent.run(input=prompt, callbacks=[st_callback])
         response = st.session_state["agents"][subject].run(
-            prompt + f" , in the {subject}", callbacks=[st_callback]
+            prompt, callbacks=[st_callback]
         )
         st.session_state.messages[subject].append(
             {"role": "assistant", "content": response}

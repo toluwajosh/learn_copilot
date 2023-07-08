@@ -11,6 +11,7 @@ from langchain.indexes.vectorstore import VectorStoreIndexWrapper
 from langchain.memory import ConversationBufferMemory
 from langchain.tools import DuckDuckGoSearchRun
 from langchain.vectorstores import Chroma
+from langchain.agents import load_tools
 
 from agents.settings import PARAMS
 
@@ -88,10 +89,14 @@ def get_agent(
             Tool(
                 name="search",
                 func=DuckDuckGoSearchRun().run,
-                description="Search the web for an answers not in the other contexts.",
+                description="Useful to search for general information and current events.",
             )
         )
+        # tools += load_tools(
+        #     ["searx-search"], searx_host="http://localhost:8888", llm=llm
+        # )
 
+    print("tools: ", tools)
     return initialize_agent(
         tools,
         llm,
