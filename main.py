@@ -5,6 +5,7 @@ from agents.setup import get_agent
 from agents.settings import PARAMS
 
 LIBRARY = tuple(PARAMS.subjects.keys())
+MODELS = tuple(PARAMS.models.keys())
 
 if "enable_search" not in st.session_state:
     st.session_state["enable_search"] = {}
@@ -45,11 +46,19 @@ with st.sidebar:
             enable_search=enable_search,
         )
 
-    # subject_request = st.text_input("Request a subject")
-    # st.button("Request")  # if button, do something
+    st.empty()
+    st.markdown(
+        """<hr style="height:60vh;border:none;" /> """,
+        unsafe_allow_html=True,
+    )
+    with st.expander("Settings"):
+        model = st.selectbox(
+            "Model",
+            MODELS,
+            key="model",
+        )
 
-
-print("Search: ", st.session_state.enable_search)
+# print("Search: ", st.session_state.enable_search)
 
 
 st.title("🤖 Learn CoPilot")

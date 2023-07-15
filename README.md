@@ -16,11 +16,36 @@ This project allows users to learn from documents using LLMs built on Langchain 
 - Create `config/params.json` to store information about your library. See example in `config/params_example.json`
 - Start the app with `streamlit run main.py`
 
+## Run with Docker
+
+A [Dockerfile](Dockerfile) is provided to run the app in a container. A [Makefile](Makefile) is also provided to ensure simple installation steps. You only need to run the following commands. To build the image, run:
+
+```bash
+make build
+```
+
+To run the container, run:
+
+```bash
+make run
+```
+
+To stop the container, run:
+
+```bash
+make stop
+```
+
+To remove the container and docker image, run:
+
+```bash
+make clean
+```
+
 ## TODOs
 
 - [X] Chat with document
-- [ ] Easy setup with script
-- [ ] Easy setup with Docker
+- [X] Easy setup, [with Docker](https://docs.streamlit.io/knowledge-base/tutorials/deploy/docker) and [Make](https://makefiletutorial.com/).
 - [ ] Provide two modes: retriever and explainer. Retriever mode will use the document as a prompt to give a more accurate response and explainer mode will use the document as a context to give a simpler explanation.
 - [ ] Show references to document
 - [ ] Choose between offline and cloud models

@@ -27,8 +27,11 @@ def get_agent(
     persist_path: str,
     persist: bool,
     enable_search: bool = False,
+    model: str = "OpenAI",
 ):
-    llm = get_model(PARAMS.model["name"], PARAMS.model["params"])
+    llm = get_model(
+        PARAMS.models[model]["name"], PARAMS.models[model]["params"]
+    )
     memory = ConversationBufferMemory(
         memory_key="chat_history", return_messages=True
     )

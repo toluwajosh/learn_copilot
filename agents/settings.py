@@ -10,7 +10,7 @@ class AppParams:
     rerun_indexing: bool
     library_paths: list
     added_paths: list
-    model: Dict
+    models: Dict
     enable_search: bool = False
     config_path: str = "config/params.json"
 
