@@ -12,7 +12,7 @@ if "enable_search" not in st.session_state:
 
 with st.sidebar:
     subject = st.selectbox(
-        "Choose a subject",
+        "Libraries",
         LIBRARY,
     )
 
@@ -96,9 +96,9 @@ if prompt := st.chat_input():
     st.chat_message("user").write(prompt)
     with st.chat_message("assistant"):
         st_callback = StreamlitCallbackHandler(st.container())
-        # response = agent.run(input=prompt, callbacks=[st_callback])
         response = st.session_state["agents"][subject].run(
-            prompt, callbacks=[st_callback]
+            input=prompt,
+            callbacks=[st_callback],
         )
         st.session_state.messages[subject].append(
             {"role": "assistant", "content": response}
