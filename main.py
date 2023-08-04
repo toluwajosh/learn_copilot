@@ -58,9 +58,6 @@ with st.sidebar:
             key="model",
         )
 
-# print("Search: ", st.session_state.enable_search)
-
-
 st.title("🤖 Learn CoPilot")
 st.write(
     "This is a learning chatbot that helps you to learn about various subjects directly from the source materials. You can choose from the different subjects from the sidebar. "
