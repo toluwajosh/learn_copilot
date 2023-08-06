@@ -16,35 +16,25 @@ with st.sidebar:
         LIBRARY,
     )
 
-    enable_search = st.checkbox(
-        "Enable Search",
-        value=st.session_state.enable_search.get(subject, False),
-        disabled=st.session_state.enable_search.get(subject, None) is not None,
-        key=subject,
-    )
-
     subject_params = PARAMS.subjects[subject]
 
-    agent = get_agent(
-        subject,
-        subject_params["collection_description"],
-        subject_params["collection_path"],
-        subject_params["persist_path"],
-        PARAMS.persist,
-        enable_search=enable_search,
-    )
+    # enable_search = st.checkbox(
+    #     "Enable Search",
+    #     value=st.session_state.enable_search.get(subject, False),
+    #     disabled=st.session_state.enable_search.get(subject, None) is not None,
+    #     key=subject,
+    # )
+    # if enable_search:
+    #     st.session_state.enable_search[subject] = True
 
-    if enable_search:
-        st.session_state.enable_search[subject] = True
-
-        agent = get_agent(
-            subject,
-            subject_params["collection_description"],
-            subject_params["collection_path"],
-            subject_params["persist_path"],
-            PARAMS.persist,
-            enable_search=enable_search,
-        )
+    #     agent = get_agent(
+    #         subject,
+    #         subject_params["collection_description"],
+    #         subject_params["collection_path"],
+    #         subject_params["persist_path"],
+    #         PARAMS.persist,
+    #         enable_search=enable_search,
+    #     )
 
     st.empty()
     st.markdown(
@@ -57,6 +47,16 @@ with st.sidebar:
             MODELS,
             key="model",
         )
+
+    agent = get_agent(
+        subject,
+        subject_params["collection_description"],
+        subject_params["collection_path"],
+        subject_params["persist_path"],
+        PARAMS.persist,
+        # enable_search=enable_search,
+        model=model,
+    )
 
 st.title("🤖 Learn CoPilot")
 st.write(

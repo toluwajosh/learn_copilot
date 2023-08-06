@@ -42,6 +42,46 @@ To remove the container and docker image, run:
 make clean
 ```
 
+## OpenAI Model
+
+This is a model that needs the OpenAI API to work. The parameters can be specified as follows.
+
+```json
+{
+    "OpenAI": {
+      "name": "chat_openai",
+      "streaming": true,
+      "model_params": {
+        "temperature": 0.7,
+        "model": "gpt-3.5-turbo"
+      },
+      "embedding_params": {}
+    }
+  },
+```
+
+## GPT4all Model
+
+This is local model that can be used in this project. The parameters can be specified as follows.
+
+```json
+{
+  "GPT4All": {
+      "name": "gpt4all",
+      "streaming": true,
+      "model_params": {
+        "model": "models/ggml-gpt4all-j-v1.3-groovy.bin",
+        "n_ctx": 1000,
+        "backend": "gptj",
+        "n_batch": 8
+      },
+      "embedding_params": {
+        "model": "paraphrase-MiniLM-L6-v2"
+      }
+    }
+}
+```
+
 ## TODOs
 
 - [X] Chat with document

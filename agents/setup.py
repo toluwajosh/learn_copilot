@@ -7,6 +7,7 @@ from langchain.chains import (
     RetrievalQA,
     LLMChain,
 )
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.chat_models import ChatOpenAI
 from langchain.document_loaders import DirectoryLoader, TextLoader
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -38,6 +39,11 @@ from .models import get_model
 
 load_dotenv()
 
+EMBEDDINGS_FACTORY = {
+    "OpenAI": OpenAIEmbeddings,
+    "GPT4All": HuggingFaceEmbeddings,
+}
+
 
 def get_agent(
     collection_name: str,
@@ -48,35 +54,21 @@ def get_agent(
     enable_search: bool = False,
     model: str = "OpenAI",
 ):
+    print("\n\nModel Params: ", PARAMS.models[model])
     llm = get_model(
-        PARAMS.models[model]["name"], PARAMS.models[model]["params"]
+        PARAMS.models[model]["name"], PARAMS.models[model]["model_params"]
     )
     memory = ConversationBufferMemory(
         memory_key="chat_history",
         return_messages=True,
     )
 
+    ## embeddings
+    embeddings = EMBEDDINGS_FACTORY[model](
+        **PARAMS.models[model]["embedding_params"]
+    )
+
     if collection_name == "Chat":
-        template = "You are a helpful assistant who can answer question about anything. Explain with examples as much as you can and ask questions where necessary."
-
-        # template = """You are Assistant, a large language model trained by OpenAI.
-
-        # Assistant is designed to be able to assist with a wide range of tasks, from answering simple questions to providing in-depth explanations and discussions on a wide range of topics. As a language model, Assistant is able to generate human-like text based on the input it receives, allowing it to engage in natural-sounding conversations and provide responses that are coherent and relevant to the topic at hand.
-
-        # Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.
-
-        # Overall, Assistant is a powerful tool that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist."""
-        system_message_prompt = SystemMessagePromptTemplate.from_template(
-            template
-        )
-        human_template = "{input}"
-        human_message_prompt = HumanMessagePromptTemplate.from_template(
-            human_template
-        )
-        chat_prompt = ChatPromptTemplate.from_messages(
-            [system_message_prompt, human_message_prompt]
-        )
-        # chain = LLMChain(llm=llm, prompt=chat_prompt, return_final_only=False)
         tools = [
             Tool(
                 name=collection_name,
@@ -84,7 +76,6 @@ def get_agent(
                 description=collection_description,
             ),
         ]
-        # tools=[DuckDuckGoSearchRun(name="Search")]
     else:
         if os.path.isdir(collection_path):
             loader = DirectoryLoader(collection_path)
@@ -96,7 +87,7 @@ def get_agent(
             print("Reusing index...\n")
             vectorstore = Chroma(
                 persist_directory=persist_path,
-                embedding_function=OpenAIEmbeddings(),
+                embedding_function=embeddings,
             )
             index = VectorStoreIndexWrapper(vectorstore=vectorstore)
         else:
@@ -163,7 +154,7 @@ def get_agent(
         # agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
         memory=memory,
         handle_parsing_errors=True,
-        # max_iterations=5,
+        max_iterations=5,
         verbose=True,
         # return_intermediate_steps=True,
     )
